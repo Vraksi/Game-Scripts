@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class Movement : PhysicsObject
 {
     private Rigidbody2D rb2b;
     public float maxSpeed = 7;
@@ -13,6 +13,11 @@ public class Movement : MonoBehaviour
         rb2b = GetComponent<Rigidbody2D>();
     }
 
+    private void Update()
+    {
+        targetVelocity = Vector2.right;
+    }
+    /*
     private void FixedUpdate()
     {
         
@@ -26,7 +31,7 @@ public class Movement : MonoBehaviour
     }
 
 
-    /*
+    
     void ComputeVelocity()
     {
         Vector2 move = Vector2.zero;

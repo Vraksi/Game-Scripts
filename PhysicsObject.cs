@@ -10,12 +10,12 @@ public class PhysicsObject : MonoBehaviour
 
     protected bool grounded;
     protected Vector2 groundNormal;
-
+    protected Vector2 targetVelocity;
     protected Rigidbody2D rb2d;
     protected Vector2 velocity;
     protected ContactFilter2D contactFilter;
     protected RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
-    protected List<RaycastHit2D> hitBufferList = new List<RaycastHit2D>(16);
+    protected List<RaycastHit2D> hitBufferList = new List<RaycastHit2D>(16);     
 
     protected const float minMoveDistance = 0.001f;
     protected const float shellRadius = 0.01f;
@@ -46,15 +46,20 @@ public class PhysicsObject : MonoBehaviour
         //gravity er en standard værdi (0.-9,8) Minus fordi gravity hiver os ned. Det ganger vi med Deltatime fordi at vi skal accelerere vores hastighed
         //deltatime er vores tid mellem Frames f.eks. 0,162 sekunder
         velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
+        velocity.x = targetVelocity.x;
 
-        grounded = false;
+        grounded = false;       
 
         //Vi har så ærkleret en vector2 hvor vi så gemmer hastigheden i
         Vector2 deltaPosition = velocity * Time.deltaTime;
 
-        Vector2 move = Vector2.up * deltaPosition.y;
+        Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
 
-        print(move);
+        Vector2 move = moveAlongGround * deltaPosition.x;
+
+        Movement(move, false);
+
+        move = Vector2.up * deltaPosition.y;       
 
         Movement(move, true);
     }
