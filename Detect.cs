@@ -8,6 +8,8 @@ public class Detect : MonoBehaviour
     private Rigidbody2D rb2b;
     public Animator animator;
 
+    //TODO sprites klipper over hinanden når falder ned på det sidste koordinat
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Platform")
@@ -45,8 +47,7 @@ public class Detect : MonoBehaviour
         else if (velocity.y > 0)
         {
             animator.SetBool("isFalling", false);
-            animator.SetBool("HasLanded", false);
-            print(animator.GetBool("HasLanded"));
+            animator.SetBool("HasLanded", false);            
         }
     }
 

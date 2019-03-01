@@ -49,21 +49,18 @@ public class Movement : PhysicsObject
 
         detect.Falling(velocity);
         jump();
-        
-        if (Input.GetKey(KeyCode.D))
+        walk();
+        Dash();
+    }
+
+    public void Dash()
+    {        
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            transform.localScale = new Vector3(3.4f, 3.8f, 2f);
-            targetVelocity.x = maxSpeed;                        
+            print("Du dashede");
+            velocity.y = 0;
+            velocity.x = 40;
         }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.localScale = new Vector3 (-3.4f, 3.8f, 2f);
-            targetVelocity.x = maxSpeed * -1;                       
-        }
-        else
-        {            
-            targetVelocity.x = 0f;
-        }             
     }
 
     public void jump()
@@ -83,6 +80,24 @@ public class Movement : PhysicsObject
                     velocity.y = velocity.y * 0.5f;                    
                 }
             }
+    }
+
+    private void walk()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.localScale = new Vector3(3.4f, 3.8f, 2f);
+            targetVelocity.x = maxSpeed;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            transform.localScale = new Vector3(-3.4f, 3.8f, 2f);
+            targetVelocity.x = maxSpeed * -1;
+        }
+        else
+        {
+            targetVelocity.x = 0f;
+        }
     }
 
     //private void OnCollisionEnter2D(Collision2D collision)
