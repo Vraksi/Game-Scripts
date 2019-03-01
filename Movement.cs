@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : PhysicsObject
-{
+{    
     private Rigidbody2D rb2b;
-    public PhysicsObject pO;
-    public GameObject peter;
     public float maxSpeed = 7f;
     public float jumpTakeOffSpeed = 7f;
+    private bool jumpTrue = false;
+    private Detect detect;
     Vector2 movement;
-    
+    public Animator animator;  
+
     private void Start()
     {
+        detect = GameObject.FindObjectOfType<Detect>();
         rb2b = GetComponent<Rigidbody2D>();
-        //instantiering af vores kode i
-        peter = GetComponent<GameObject>();
-        pO = GetComponent<PhysicsObject>();        
+        //instantiering af vores kode i       
+        //detect123 = GetComponent<Detect>;
+    }
+
+    private void Update()
+    {
+        
     }
 
     private void FixedUpdate()
@@ -33,29 +39,25 @@ public class Movement : PhysicsObject
 
         //move.x = Input.GetAxis("Horizontal");
 
-        
-        if (Input.GetKeyDown(KeyCode.Space))
-        {            
-            velocity.y = jumpTakeOffSpeed;
-        }
-        else if (Input.GetKeyUp(KeyCode.Space))        
-        {            
-            if (velocity.y > 0)
-            {
-                velocity.y = velocity.y * 0.5f;
-            }
-        }
-        
-        
-        //targetVelocity = move * maxSpeed;
+        //jumpTrue                
 
+
+        //targetVelocity = move * maxSpeed;
+        
+        animator.SetFloat("Speed", Mathf.Abs(targetVelocity.x));
+        animator.SetFloat("VerticalSpeed", velocity.y);
+
+        detect.Falling(velocity);
+        jump();
         
         if (Input.GetKey(KeyCode.D))
         {
+            transform.localScale = new Vector3(3.4f, 3.8f, 2f);
             targetVelocity.x = maxSpeed;                        
         }
         else if (Input.GetKey(KeyCode.A))
         {
+            transform.localScale = new Vector3 (-3.4f, 3.8f, 2f);
             targetVelocity.x = maxSpeed * -1;                       
         }
         else
@@ -63,6 +65,46 @@ public class Movement : PhysicsObject
             targetVelocity.x = 0f;
         }             
     }
+
+    public void jump()
+    {
+        jumpTrue = detect.jumpTest();
+
+        if (Input.GetKeyDown(KeyCode.Space) && jumpTrue)
+            {
+                animator.SetBool("isJumping", true);
+                velocity.y = jumpTakeOffSpeed;                               
+            }
+            else if (Input.GetKeyUp(KeyCode.Space))
+            {
+                
+                if (velocity.y > 0)
+                {                    
+                    velocity.y = velocity.y * 0.5f;                    
+                }
+            }
+    }
+
+    //private void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.tag != "Player")
+    //    {
+    //        HasLanded();
+    //    }
+
+    //}
+
+    //private void HasLanded()
+    //{
+    //    animator.SetBool("isFalling", false);
+    //    animator.SetBool("HasLanded", true);
+    //    if (animator.GetBool("HasLanded"))
+    //    {
+    //        velocity.y = 0;
+    //    }
+    //}
+
+
     /*
     private void FixedUpdate()
     {

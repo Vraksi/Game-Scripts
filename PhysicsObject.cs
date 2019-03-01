@@ -12,7 +12,7 @@ public class PhysicsObject : MonoBehaviour
     protected Vector2 groundNormal;
     protected Vector2 targetVelocity;
     protected Rigidbody2D rb2d;
-    protected Vector2 velocity;
+    public Vector2 velocity;
     protected ContactFilter2D contactFilter;
     protected RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
     protected List<RaycastHit2D> hitBufferList = new List<RaycastHit2D>(16);     
@@ -27,7 +27,7 @@ public class PhysicsObject : MonoBehaviour
     }
 
     void Start()
-    {
+    {        
         contactFilter.useTriggers = false;
         // this uses the settings from the physics settings in unity. Edit/project settings/physics2D
         contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
@@ -41,14 +41,14 @@ public class PhysicsObject : MonoBehaviour
     }
 
     // Fixed update kalder funktionen en specifik mængde gange i sekundet
-    void FixedUpdate()
+    public void Gravity()
     {
         //gravity er en standard værdi (0.-9,8) Minus fordi gravity hiver os ned. Det ganger vi med Deltatime fordi at vi skal accelerere vores hastighed
         //deltatime er vores tid mellem Frames f.eks. 0,162 sekunder
         velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
         velocity.x = targetVelocity.x;
 
-        grounded = false;       
+        grounded = false;
 
         //Vi har så ærkleret en vector2 hvor vi så gemmer hastigheden i
         Vector2 deltaPosition = velocity * Time.deltaTime;
@@ -59,10 +59,12 @@ public class PhysicsObject : MonoBehaviour
 
         Movement(move, false);
 
-        move = Vector2.up * deltaPosition.y;       
+        move = Vector2.up * deltaPosition.y;
 
         Movement(move, true);
     }
+
+
 
     void Movement(Vector2 move, bool yMovement)
     {
