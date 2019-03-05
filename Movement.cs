@@ -4,18 +4,37 @@ using UnityEngine;
 
 public class Movement : PhysicsObject
 {    
-    private Rigidbody2D rb2b;
-    public float maxSpeed = 7f;
-    public float jumpTakeOffSpeed = 7f;
-    private bool jumpTrue = false;
+    private Rigidbody2D rb2;
     private Detect detect;
     Vector2 movement;
-    public Animator animator;  
+
+    private bool jumpTrue = false;
+    private bool direction = true;
+    public Animator animator;
+    public float maxSpeed = 7f;
+    public float jumpTakeOffSpeed = 7f;
+
+    private float dashTimeCd;
+    public float dashTime = 2f;
+    private float cd;
+    public float dashCd = 2f;
+    private bool dashTrue = true;
+
+    public float dashSpeed = 40;
+    //public float startDashTime; 
+    //private float dashTime;
+    //public float time = 2;
+
+    private bool dashing;
+
+
 
     private void Start()
     {
         detect = GameObject.FindObjectOfType<Detect>();
-        rb2b = GetComponent<Rigidbody2D>();
+        rb2 = GetComponent<Rigidbody2D>();
+        dashTimeCd = dashTime;
+        cd = dashCd;
         //instantiering af vores kode i       
         //detect123 = GetComponent<Detect>;
     }
@@ -46,7 +65,6 @@ public class Movement : PhysicsObject
         
         animator.SetFloat("Speed", Mathf.Abs(targetVelocity.x));
         animator.SetFloat("VerticalSpeed", velocity.y);
-
         detect.Falling(velocity);
         jump();
         walk();
@@ -54,18 +72,52 @@ public class Movement : PhysicsObject
     }
 
     public void Dash()
-    {        
-        if (Input.GetKeyDown(KeyCode.R))
+    {
+        cd = cd - Time.smoothDeltaTime;
+        dashTrue = detect.dashTrue;        
+        if (Input.GetKeyDown(KeyCode.R) && dashTrue)
         {
-            print("Du dashede");
-            velocity.y = 0;
-            velocity.x = 40;
+            if (cd <= 0)
+            {
+                dashing = true;
+            }
+        }
+
+        //TODO kode der stopper vores dash hvis vi rammer en væg
+        if (dashing)
+        {
+            animator.SetBool("isDashing", true);
+            dashTimeCd = dashTimeCd - Time.smoothDeltaTime;           
+            if (direction && dashTimeCd >= 0)
+            {
+                //print("Du dashede til højre");
+                gravityModifier = 0;
+                velocity.y = 0;
+                velocity.x = targetVelocity.x = dashSpeed;                              
+            }
+            else if (!direction && dashTimeCd >= 0)
+            {
+                //print("Du dashede til venstre");
+                gravityModifier = 0;
+                velocity.y = 0;
+                velocity.x = targetVelocity.x = dashSpeed * -1f;                            
+            }            
+        }
+        if (dashTimeCd <= 0)
+        {
+            targetVelocity.x = 0;
+            dashing = false;
+            dashTimeCd = dashTime;
+            cd = dashCd;
+            gravityModifier = 1;
+            detect.dashTrue = false;
+            animator.SetBool("isDashing", false);
         }
     }
 
     public void jump()
     {
-        jumpTrue = detect.jumpTest();
+        jumpTrue = detect.JumpTest();
 
         if (Input.GetKeyDown(KeyCode.Space) && jumpTrue)
             {
@@ -88,49 +140,21 @@ public class Movement : PhysicsObject
         {
             transform.localScale = new Vector3(3.4f, 3.8f, 2f);
             targetVelocity.x = maxSpeed;
+            direction = true;
         }
         else if (Input.GetKey(KeyCode.A))
         {
             transform.localScale = new Vector3(-3.4f, 3.8f, 2f);
             targetVelocity.x = maxSpeed * -1;
+            direction = false;
         }
-        else
+        else if (!dashing && Input.GetKeyUp(KeyCode.A))
+        {
+            targetVelocity.x = 0f;
+        }
+        else if (!dashing && Input.GetKeyUp(KeyCode.D))
         {
             targetVelocity.x = 0f;
         }
     }
-
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.tag != "Player")
-    //    {
-    //        HasLanded();
-    //    }
-
-    //}
-
-    //private void HasLanded()
-    //{
-    //    animator.SetBool("isFalling", false);
-    //    animator.SetBool("HasLanded", true);
-    //    if (animator.GetBool("HasLanded"))
-    //    {
-    //        velocity.y = 0;
-    //    }
-    //}
-
-
-    /*
-    private void FixedUpdate()
-    {
-        
-        float speedH = Input.GetAxis("Horizontal");
-        float speedV = Input.GetAxis("Vertical");
-        Vector2 movement = new Vector2(speedH, speedV);
-        rb2b.AddForce(movement);
-
-        //rb2b.velocity = new Vector2(speedH, speedV);
-
-    }
-    */
 }

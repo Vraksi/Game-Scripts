@@ -5,6 +5,7 @@ using UnityEngine;
 public class Detect : MonoBehaviour
 {
     public bool jumpTrue;
+    public bool dashTrue;
     private Rigidbody2D rb2b;
     public Animator animator;
 
@@ -14,7 +15,7 @@ public class Detect : MonoBehaviour
     {
         if (collision.gameObject.tag == "Platform")
         {
-            jumpTrue = true;
+            jumpTrue = true;            
             animator.SetBool("HasLanded", true);
             animator.SetBool("isFalling", false);
         }
@@ -35,8 +36,15 @@ public class Detect : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Platform")
+        {
+            dashTrue = true;
+        }
+    }
 
-
+    // Probably the the place for this function
     public void Falling(Vector2 velocity)
     { 
         if (velocity.y < 0)
@@ -51,8 +59,13 @@ public class Detect : MonoBehaviour
         }
     }
 
-    public bool jumpTest()
+    public bool JumpTest()
     {
         return jumpTrue;
+    }
+
+    public bool DashTest()
+    {        
+        return dashTrue;
     }
 }
